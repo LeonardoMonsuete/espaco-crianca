@@ -16,7 +16,7 @@ class Config
     public DateTime $created_at;
     public DateTime $updated_at;
     private ?string $classValidation;
-    public const _CONFIG_REGISTRA_SAIDA_ALUNO_ = 'Registra saida do aluno';
+    public const _CONFIG_REGISTRA_SAIDA_PESSOA_ = 'Registra saida da pessoa';
     public const _CONFIG_DEFAULT_BACKGROUND_IMAGE_ = 'Imagem de plano de fundo padrão';
     public const _CONFIG_MAIL_REPOSITORY_ = 'Destinatários disparo de e-mails (caso queira mais de um endereço separa-los com ; ).';
     public const _CONFIG_TIME_TRIGGER_TO_SEND_PRESENCES_REPORT_ = 'Horário de disparo de relatório diário de presença';

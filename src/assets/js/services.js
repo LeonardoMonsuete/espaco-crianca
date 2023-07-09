@@ -11,6 +11,8 @@ function redirect(url) {
 function searchPresencesByDate() {
     let startDate = document.getElementById('startDate').value
     let endDate = document.getElementById('endDate').value
+    let category = document.getElementById('category').value
+    let categoryParam = ""
 
     if (startDate == null || startDate == '') {
         alert('Data de inicio não pode ser vazia')
@@ -31,8 +33,12 @@ function searchPresencesByDate() {
         alert('Formato de data final inválida')
         return false;
     }
+    
+    if(category != null && category != undefined){
+        categoryParam = 'category=' + category + '&'
+    }
 
-    redirect('presencas.php?startDate=' + startDate + '&endDate=' + endDate)
+    redirect('presencas.php?'+categoryParam+'startDate=' + startDate + '&endDate=' + endDate)
 }
 
 function logout() {
@@ -57,9 +63,9 @@ function changeStatus(userId, currentStatus, nome) {
 
 
 
-    if (confirm('Deseja realmente ' + newStatusText + ' o aluno ' + nome + ' ?')) {
+    if (confirm('Deseja realmente ' + newStatusText + ' a pessoa ' + nome + ' ?')) {
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", './src/controllers/admin/studentsController.php', true);
+        xhr.open("POST", './src/controllers/admin/personController.php', true);
         xhr.send(formData);
         xhr.onreadystatechange = () => { // Call a function when the state changes.
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
@@ -306,5 +312,13 @@ function delay(time) {
 var nods = document.getElementsByClassName('img-miniature');
 for (var i = 0; i < nods.length; i++) {
     nods[i].attributes['src'].value += "?a=" + Math.random();
+}
+
+function showHideField(field, basedValidation, expectedValue)
+{
+    field.style.display = "block"
+    if(basedValidation !== expectedValue){
+        field.style.display = "none"
+    }
 }
 

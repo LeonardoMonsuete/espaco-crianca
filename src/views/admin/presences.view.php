@@ -3,14 +3,19 @@ $updating = false;
 
 use Models\Presence;
 use Models\Config;
+use Models\PersonCategory;
 
 require $_SERVER['DOCUMENT_ROOT'] . "/espaco-crianca/src/config/settings.config.php";
 require $_SERVER['DOCUMENT_ROOT'] . "/espaco-crianca/src/config/datatable.language.pt-br.php";
 
-$presences = Presence::getPresencesByDateOrAll();
+$presences = Presence::getPresencesByDateAndCategoryOrAll();
 
-if (isset($_GET['startDate']) && isset($_GET['endDate'])) {
-    $presences = Presence::getPresencesByDateOrAll(null,$_GET['startDate'],$_GET['endDate']);
+if (isset($_GET['startDate']) && isset($_GET['endDate']) && isset($_GET['category'])) {
+    $presences = Presence::getPresencesByDateAndCategoryOrAll(null,$_GET['startDate'],$_GET['endDate'],$_GET['category']);
+}
+
+if (isset($_GET['startDate']) && isset($_GET['endDate']) && !isset($_GET['category'])) {
+    $presences = Presence::getPresencesByDateAndCategoryOrAll(null,$_GET['startDate'],$_GET['endDate']);
 }
 
 
@@ -84,6 +89,28 @@ if (isset($_GET['startDate']) && isset($_GET['endDate'])) {
                             <!-- <div class="valid-feedback">Nome não pode ser vazio</div> -->
                         </div>
                     </div>
+
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Categoria</label>
+                            <select value="<?= !empty($_GET['category']) ? $_GET['category'] : "" ?>" class="form-select" name="category" id="category" aria-label="select example">
+                                <?php if(!empty($_GET['category'])): ?>
+                                    <option selected value="<?= $_GET['category'] ?>"><?= PersonCategory::getCategoryByAttribute(null, 'id', $_GET['category'])['ds_categoria'] ?> </option>
+                                    <?php foreach (PersonCategory::getCategories() as $category) { 
+                                        if($category['id'] !== $_GET['category']){
+                                        ?>
+                                        <option value="<?= $category['id'] ?>"><?= $category['ds_categoria'] ?> </option>
+                                    <?php } } ?>    
+                                    <option value="">Todas</option>
+                                <?php else: ?>
+                                    <option value="">Todas</option>
+                                    <?php foreach (PersonCategory::getCategories() as $category) { ?>
+                                        <option value="<?= $category['id'] ?>"><?= $category['ds_categoria'] ?> </option>
+                                    <?php } ?>    
+                                <?php endif; ?>                              
+                            </select>
+                        </div>
+                    </div>
           
                     <div class="col-md-12 pb-4 ">
                         <button onclick="searchPresencesByDate()" class="btn btn-md mr-5 btn-secondary text-white" type="submit">Buscar</button>
@@ -97,6 +124,7 @@ if (isset($_GET['startDate']) && isset($_GET['endDate'])) {
                 <table id="table-presences" class="table table-striped table-hover display nowrap general-table" style="width:100%">
                     <thead>
                         <th>Nome</th>
+                        <th>Categoria</th>
                         <th>Data</th>
                         <th>Hora de entrada</th>
                         <th>Hora de saída</th>
@@ -106,10 +134,11 @@ if (isset($_GET['startDate']) && isset($_GET['endDate'])) {
                         <?php foreach ($presences as $presence) : ?>
                             <tr>
                                 <td><?= $presence['nome'] ?></td>
+                                <td><?= PersonCategory::getCategoryByAttribute(null, 'id', $presence['id_categoria'])['ds_categoria']  ?></td>
                                 <td><?= date('d/m/Y', strtotime($presence['data'])) ?></td>
                                 <td><?= date('H:i:s', strtotime($presence['hora_entrada'])) ?></td>
                                 <td><?= 
-                                        (intval(Config::getConfigByDsConfig(null,Config::_CONFIG_REGISTRA_SAIDA_ALUNO_)['valor_configuracao']) == 1) ? date('H:i:s', strtotime($presence['hora_saida'])) : "N/A";
+                                        (intval(Config::getConfigByAttribute(null,'ds_configuracao',Config::_CONFIG_REGISTRA_SAIDA_PESSOA_)['valor_configuracao']) == 1) ? date('H:i:s', strtotime($presence['hora_saida'])) : "N/A";
                                     ?>
                                 </td>
              

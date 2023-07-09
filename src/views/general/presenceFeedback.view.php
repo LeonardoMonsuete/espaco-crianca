@@ -41,7 +41,7 @@ if (isset($_GET['auth'])) {
 
         <div class="alert alert-success" role="alert">
             <h3>
-                Olá <?= isset($_SESSION['responseStudentPresence']) ? $_SESSION['responseStudentPresence']['student'] : " "; ?>, seja bem-vindo(a) ao Espaço da Criança !
+                Olá <?= isset($_SESSION['responsePersonPresence']) ? $_SESSION['responsePersonPresence']['person'] : " "; ?>, seja bem-vindo(a) ao Espaço da Criança !
             </h3>
         </div>
         <div class="row">
@@ -57,8 +57,8 @@ if (isset($_GET['auth'])) {
                     <h4 class="text-light">
                         <?php
     
-                        if (isset($_SESSION['responseStudentPresence'])) {
-                            echo $_SESSION['responseStudentPresence']['msg'];
+                        if (isset($_SESSION['responsePersonPresence'])) {
+                            echo $_SESSION['responsePersonPresence']['msg'];
                         }
                         ?>
                     </h4>
@@ -75,9 +75,9 @@ if (isset($_GET['auth'])) {
                         <h4 class="text-light">
                         <?php
     
-                        if (isset($_SESSION['responseStudentPresence'])) {
+                        if (isset($_SESSION['responsePersonPresence'])) {
     
-                            echo $_SESSION['responseStudentPresence']['msg'];
+                            echo $_SESSION['responsePersonPresence']['msg'];
                         }
                         ?>
                     </h4>

@@ -1,7 +1,7 @@
 <?php
 $activeDashboard = 'active';
 $activeUsers = '';
-$activeStudents = '';
+$activePerson = '';
 $activeRules = '';
 $activeConfigs = '';
 
@@ -42,20 +42,21 @@ $activeConfigs = '';
                 <h3>Dashboard</h3>
             </div>
 
+            <span><b>Contagem de presentes de ausentes</b></span>
             <div class="row col-md-12">
                 <div class="col-md-3">
                     <div class="card text-white bg-success mb-3 w-100">
-                            <div class="card-header">Alunos Presentes</div>
+                            <div class="card-header">Assistidos Presentes</div>
                             <div class="card-body">
                                 <i class='bx bxs-graduation nav_icon'></i>
-                                <h5 id="present-student-counter" class="card-title">0</h5>
+                                <h5 id="present-person-counter" class="card-title">0</h5>
                             </div>
                     </div>
                 </div>
 
                 <div class="col-md-3">
                     <div class="card text-white bg-danger mb-3  w-100">
-                            <div class="card-header">Alunos Ausentes</div>
+                            <div class="card-header">Assistidos Ausentes</div>
                             <div class="card-body">
                                 <i class='bx bxs-graduation nav_icon'></i>
                                 <h5 id="present-absent-counter"class="card-title">0</h5>
@@ -84,7 +85,8 @@ $activeConfigs = '';
                 </div>
            
             </div>
-
+            <hr>
+            <span><b>Gráfico de presença por dia da semana</b></span>
             <div class="row col-md-12">
                 <div class="col-md-6">
                 <canvas class="" id="myChart" width="auto" height="auto"></canvas>

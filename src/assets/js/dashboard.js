@@ -10,7 +10,7 @@ $(document).ready(function () {
             let response = JSON.parse(xhr.responseText);
             console.log(response)
             if (response.status === 1) {
-                document.getElementById('present-student-counter').innerHTML = response.presentStudentCounter
+                document.getElementById('present-person-counter').innerHTML = response.presentPersonCounter
                 document.getElementById('present-absent-counter').innerHTML = response.presentAbsentCounter
             } else {
                 alert(response.msg)

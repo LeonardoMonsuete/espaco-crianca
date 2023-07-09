@@ -5,4 +5,4 @@ if(!isset($_SESSION['loggedUserData'])){
     header('Location: login.php');
     exit;
 }
-include_once('./src/views/admin/students.view.php');
+include_once('./src/views/admin/person.view.php');

@@ -22,8 +22,8 @@ const startVideo = () => {
 }
 
 const loadLabels = async () => {
-    const url = './src/controllers/ajax/getStudentsData.ajax.php'
-    const responseLabels = await getStudentsRegistrations("POST", url);
+    const url = './src/controllers/ajax/getPersonData.ajax.php'
+    const responseLabels = await getPersonRegistrations("POST", url);
     const labels = JSON.parse("[" + responseLabels + "]")[0];
     console.log(labels)
     // const labels = makeRequest()
@@ -91,15 +91,15 @@ let resulado = cam.addEventListener('play', async () => {
             if(!result.toString().includes('unknown')){
 
   
-                let aluno = result.toString().split("(")[0]
+                let pessoa = result.toString().split("(")[0]
                 let porcentChance = parseInt(result.toString().split("(")[1].replace(/\D/g, ""));
-               // console.log(aluno + ' chance ' + porcentChance)
+               // console.log(pessoa + ' chance ' + porcentChance)
                 if(porcentChance < 50){
                     const options = { boxColor: "#00FA9A" }
                     const drawBox = new faceapi.draw.DrawBox(box, options)
                     drawBox.draw(canvas)
                     //test()
-                    window.location.href = './src/controllers/general/presenceController.php?aluno=' + aluno
+                    window.location.href = './src/controllers/general/presenceController.php?pessoa=' + pessoa
                 }
             }
         })
@@ -114,17 +114,17 @@ let resulado = cam.addEventListener('play', async () => {
 
 async function makeRequest() {
     // await code here
-    const url = './src/controllers/ajax/getStudentsData.ajax.php'
-    let result = await getStudentsRegistrations("POST", url);
-    // code below here will only execute when await getStudentsRegistrations() finished loading
+    const url = './src/controllers/ajax/getPersonData.ajax.php'
+    let result = await getPersonRegistrations("POST", url);
+    // code below here will only execute when await getPersonRegistrations() finished loading
     return result;
 }
 
 
-function getStudentsRegistrations(method, url)
+function getPersonRegistrations(method, url)
 {
     // var formData = new FormData();
-    // const phpScript = './src/controllers/ajax/getStudentsData.ajax.php'
+    // const phpScript = './src/controllers/ajax/getPersonData.ajax.php'
     // formData.append('action', 'getAllRegistration')
     // const xhr = new XMLHttpRequest();
     // xhr.open("POST", phpScript, true);

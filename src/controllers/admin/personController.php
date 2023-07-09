@@ -1,6 +1,6 @@
 <?php
 
-use Models\Student;
+use Models\Person;
 
 session_start();
 require $_SERVER['DOCUMENT_ROOT'] . "/espaco-crianca/src/config/settings.config.php";
@@ -15,11 +15,11 @@ if($response['status'] == 1){
             break;
     
         case 'insertUpdate':
-            $response = insertUpdateStudent($postData, $postFiles);
+            $response = insertUpdatePerson($postData, $postFiles);
             break;
     }
     
-    $response['urlLocation'] = 'alunos.php';
+    $response['urlLocation'] = 'pessoa.php';
 }
 
 echo json_encode($response);
@@ -27,20 +27,20 @@ echo json_encode($response);
 
 function changeStatus($postData)
 {
-    $response = Student::changeStatus($postData['userId'], $postData['newStatus']);
+    $response = Person::changeStatus($postData['userId'], $postData['newStatus']);
     return $response;
 }
 
-function insertUpdateStudent($postData, $postFiles)
+function insertUpdatePerson($postData, $postFiles)
 {
     $img_01Post = isset($postFiles['img_01']['tmp_name']) ?  $postFiles['img_01']['tmp_name'] : "";
     $img_02Post = isset($postFiles['img_02']['tmp_name']) ?  $postFiles['img_02']['tmp_name'] : "";
-    $studentObj = new Student($postData['nome'], $postData['matricula'],$img_01Post , $img_02Post, $postData['id_responsavel'],$postData['status'], true);    
+    $personObj = new Person($postData['nome'], $postData['id_categoria'], $postData['matricula'],$img_01Post , $img_02Post, $postData['id_responsavel'],$postData['status'], true);    
     if (isset($postData['isUpdate'])) {
-        $studentObj->id = $postData['uid'];
-        $response = $studentObj->update();
+        $personObj->id = $postData['uid'];
+        $response = $personObj->update();
     } else {
-        $response = $studentObj->save();
+        $response = $personObj->save();
     }
     return $response;
 }
@@ -52,7 +52,7 @@ function validateIsSetPostData($postData, $postFiles)
     }
     
     if( ($postData['action'] != 'changeStatus' && empty($postData['isUpdate'])) && (!isset($postFiles) || !isset($postFiles['img_01']) || !isset($postFiles['img_02']))){
-        return ['status' => 0, 'msg' => 'Duas imagens do aluno deve ser inseridas'];
+        return ['status' => 0, 'msg' => 'Duas imagens da pessoa deve ser inseridas'];
     }
     return ['status' => 1];
 }

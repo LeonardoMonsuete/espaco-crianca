@@ -53,7 +53,7 @@ require $_SERVER['DOCUMENT_ROOT'] . "/espaco-crianca/src/config/settings.config.
         </div>
         <!-- CONDITIONATE INTO SYSTEM CONFIG -->
         <?php 
-        if(intval(Config::getConfigByAttribute(null,'ds_configuracao',Config::_CONFIG_REGISTRA_SAIDA_ALUNO_)['valor_configuracao']) == 1): ?>
+        if(intval(Config::getConfigByAttribute(null,'ds_configuracao',Config::_CONFIG_REGISTRA_SAIDA_PESSOA_)['valor_configuracao']) == 1): ?>
         <div class="row d-flex justify-content-center">
             <!-- <div class="col"></div> -->
             <div class="col-12 d-grid gap-2 "> <button onclick="redirect('registra-presenca.php')" class="btn btn-danger text-white btn-lg mb-2 btn-giant">Marcar Saída</button> </div>

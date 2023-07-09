@@ -24,14 +24,14 @@ const startVideo = () => {
 }
 
 const loadLabels = async () => {
-    const url = './src/controllers/ajax/getStudentsData.ajax.php'
-    const responseLabels = await getStudentsRegistrations("POST", url);
+    const url = './src/controllers/ajax/getPersonData.ajax.php'
+    const responseLabels = await getPersonRegistrations("POST", url);
     const labels = JSON.parse("[" + responseLabels + "]")[0];
 
     return Promise.all(labels.map(async label => {
         const descriptions = []
         for (let i = 1; i <= 2; i++) {
-            const img = await faceapi.fetchImage(`./media/pictures/students/${label}/img_0${i}.jpg`)
+            const img = await faceapi.fetchImage(`./media/pictures/person/${label}/img_0${i}.jpg`)
             const detections = await faceapi
                 .detectSingleFace(img)
                 .withFaceLandmarks()
@@ -85,13 +85,13 @@ cam.addEventListener('play', async () => {
         $(".loading-spinner-div")[0].classList.add('fade-out');
         $(".loading-spinner-div").hide("slow");
         $("#loading-camera").hide();
-        let aluno;
+        let pessoa;
         results.forEach((result, index) => {
             const box = resizedDetections[index].detection.box
             if (!result.toString().includes('unknown')) {
-                aluno = result.toString().split("(")[0] 
+                pessoa = result.toString().split("(")[0] 
                 let porcentChance = parseInt(result.toString().split("(")[1].replace(/\D/g, ""));
-                console.log(aluno, porcentChance, count)
+                console.log(pessoa, porcentChance, count)
                 if (porcentChance < 50) {
                     count++
                     clearInterval(intervalId); 
@@ -106,9 +106,9 @@ cam.addEventListener('play', async () => {
         })
 
         if(count == 1){
-            if(aluno){
+            if(pessoa){
                 console.log('vai chamar')
-                window.location.href = './src/controllers/general/presenceController.php?aluno=' + aluno
+                window.location.href = './src/controllers/general/presenceController.php?pessoa=' + pessoa
             }
         }
     }, 100)
@@ -119,7 +119,7 @@ cam.addEventListener('play', async () => {
 
 
 
-function getStudentsRegistrations(method, url) {
+function getPersonRegistrations(method, url) {
     return new Promise(function (resolve, reject) {
         var formData = new FormData();
         formData.append('action', 'getAllRegistration')
