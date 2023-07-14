@@ -46,7 +46,7 @@ function logout() {
     window.location.href = "login.php"
 }
 
-function changeStatus(userId, currentStatus, nome) {
+function changeStatus(userId, currentStatus, nome, category) {
     let newStatusText = currentStatus == 1 ? 'inativar' : 'ativar'
     let data = { 'userId': userId, 'newStatus': currentStatus == 1 ? 0 : 1, 'action': 'changeStatus' }
 
@@ -63,7 +63,7 @@ function changeStatus(userId, currentStatus, nome) {
 
 
 
-    if (confirm('Deseja realmente ' + newStatusText + ' a pessoa ' + nome + ' ?')) {
+    if (confirm('Deseja realmente ' + newStatusText + ' o '+category +' '+ nome + ' ?')) {
         const xhr = new XMLHttpRequest();
         xhr.open("POST", './src/controllers/admin/personController.php', true);
         xhr.send(formData);

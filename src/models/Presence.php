@@ -36,13 +36,14 @@ class Presence
 
     public function registerPresenceAuto()
     {
-        $response = ['status' => 1, 'msg' => 'Presença da pessoa ' . $this->nome_pessoa . ' inserida com sucesso !'];
         $connection = Database::getConnection();
+        $dsCategory = PersonCategory::getCategoryByAttribute($connection, "id", Person::getPersonByAttribute($connection,"id",$this->id_pessoa)['id_categoria'])['ds_categoria'];
+        $response = ['status' => 1, 'msg' => "Presença do $dsCategory {$this->nome_pessoa} inserida com sucesso !"];
 
         if(count($this->validatePresence($connection)) > 0){
             $response['status'] = 0;
             setlocale( LC_ALL, 'pt_BR', 'pt_BR.iso-8859-1', 'pt_BR.utf-8', 'portuguese' );
-            $response['msg'] = "Entrada já registrada hoje ".date('d/m/Y', strtotime($this->data)).", para a pessoa em questão.";
+            $response['msg'] = "Entrada já registrada hoje ".date('d/m/Y', strtotime($this->data)).", para o $dsCategory em questão.";
             return $response;
         }
 
@@ -58,8 +59,9 @@ class Presence
             $stmt->execute();
         } catch (PDOException $e) {
             $response['status'] = 0;
-            $response['msg'] = "Erro ao registrar presença para a pessoa $this->nome_pessoa => " . $e->getMessage();
+            $response['msg'] = "Erro ao registrar presença para o $dsCategory {$this->nome_pessoa} => " . $e->getMessage();
         }
+
         $connection = null;
         return $response;
     }

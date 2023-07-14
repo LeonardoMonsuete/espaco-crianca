@@ -221,7 +221,7 @@ if (isset($_GET['update']) && isset($_GET['id'])) {
                                 <td><?= ($person['status'] == 1) ? 'Ativo' : 'Inativo' ?></td>
                                 <td>
                                     <a class="btn btn-info" href="pessoa.php?update=true&id=<?= $person['id'] ?>">Editar</a>
-                                    <button onclick="changeStatus(<?= $person['id'] ?>,<?= $person['status'] ?>, '<?= $person['nome'] ?>')" class="btn <?= $person['status'] == 1 ? 'btn-warning' : 'btn-success' ?>"><?= $person['status'] == 1 ? 'Inativar' : 'Ativar' ?></button>
+                                    <button onclick="changeStatus(<?= $person['id'] ?>,<?= $person['status'] ?>, '<?= $person['nome'] ?>', '<?php PersonCategory::getCategoryByAttribute(null, 'id', $person['id_categoria']) ?>')" class="btn <?= $person['status'] == 1 ? 'btn-warning' : 'btn-success' ?>"><?= $person['status'] == 1 ? 'Inativar' : 'Ativar' ?></button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

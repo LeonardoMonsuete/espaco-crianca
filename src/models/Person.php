@@ -46,7 +46,7 @@ class Person
 
             $person = null;
 
-            $sql = "SELECT * FROM " . DB_NAME . ".pessoa where $attribute = '$value' limit 1";
+            $sql = "SELECT p.*, cp.id as id_categoria, cp.ds_categoria FROM " . DB_NAME . ".pessoa p JOIN " . DB_NAME . ".categoria_pessoa cp on p.id_categoria = cp.id where p.$attribute = '$value' limit 1";
 
             $stmt = $connection->prepare($sql);
             $stmt->execute();

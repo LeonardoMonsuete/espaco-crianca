@@ -22,7 +22,7 @@ if (isset($_GET['auth'])) {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.13.1/i18n/pt-BR.json" defer></script>
     <?php include_once('./src/views/assetsIncludes/assets.php'); ?>
     <style>
-     
+
     </style>
 
 </head>
@@ -30,18 +30,18 @@ if (isset($_GET['auth'])) {
 <body class="bg-image">
     <?php include('./src/views/components/loadingSpinner.view.php') ?>
 
-   
+
 
     <div class="container-fluid pt-4 pb-4 bg-light text-center ">
-    <div class="row">
-        <div class="col-md-12">
-        <div class="float-start"><button onclick="redirect('index.php');" class="btn btn-link btn-light mb-2"><i class='bx bx-arrow-back'></i>  Voltar</button></div><br>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="float-start"><button onclick="redirect('index.php');" class="btn btn-link btn-light mb-2"><i class='bx bx-arrow-back'></i> Página inicial</button></div><br>
+            </div>
         </div>
-    </div>
 
         <div class="alert alert-success" role="alert">
             <h3>
-                Olá <?= isset($_SESSION['responsePersonPresence']) ? $_SESSION['responsePersonPresence']['person'] : " "; ?>, seja bem-vindo(a) ao Espaço da Criança !
+                Olá <?= isset($_SESSION['responsePersonPresence']) ? $_SESSION['responsePersonPresence']['category'] . " " . $_SESSION['responsePersonPresence']['person'] : " "; ?> !
             </h3>
         </div>
         <div class="row">
@@ -56,41 +56,48 @@ if (isset($_GET['auth'])) {
                     </div>
                     <h4 class="text-light">
                         <?php
-    
+
                         if (isset($_SESSION['responsePersonPresence'])) {
                             echo $_SESSION['responsePersonPresence']['msg'];
                         }
                         ?>
                     </h4>
                 </div>
-                <?php else : ?>
-                    <div style="background-color: rgb(255,99,71);" class="col-12 bg-gradienty">
-                        <div class="swal2-icon swal2-error swal2-animate-error-icon" style="display: flex;">
-                            <span class="swal2-x-mark">
-                                <span class="swal2-x-mark-line-left"></span>
-                                <span class="swal2-x-mark-line-right"></span>
-                            </span>
-                        </div>
+            <?php else : ?>
+                <div style="background-color: rgb(255,99,71);" class="col-12 bg-gradienty">
+                    <div class="swal2-icon swal2-error swal2-animate-error-icon" style="display: flex;">
+                        <span class="swal2-x-mark">
+                            <span class="swal2-x-mark-line-left"></span>
+                            <span class="swal2-x-mark-line-right"></span>
+                        </span>
+                    </div>
 
-                        <h4 class="text-light">
+                    <h4 class="text-light">
                         <?php
-    
+
                         if (isset($_SESSION['responsePersonPresence'])) {
-    
+
                             echo $_SESSION['responsePersonPresence']['msg'];
                         }
                         ?>
                     </h4>
-                    </div>
-                <?php endif; ?>
-         
+                </div>
+            <?php endif; ?>
+
 
         </div>
 
 
     </div>
 
+    <script>
+        setTimeout(myURL, 7000);
+        function myURL() {
+            document.location.href = 'registra-presenca.php';
+        }
+    </script>
 
 </body>
+
 
 </html>
