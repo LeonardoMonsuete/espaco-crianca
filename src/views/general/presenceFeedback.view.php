@@ -52,7 +52,7 @@ if (isset($_GET['auth'])) {
                         <span class="swal2-success-line-tip"></span>
                         <span class="swal2-success-line-long"></span>
                         <div class="swal2-success-ring"></div>
-
+                        <audio style="display:none;" src="./media/audios/success_audio.mp3"></audio>
                     </div>
                     <h4 class="text-light">
                         <?php
@@ -69,6 +69,7 @@ if (isset($_GET['auth'])) {
                         <span class="swal2-x-mark">
                             <span class="swal2-x-mark-line-left"></span>
                             <span class="swal2-x-mark-line-right"></span>
+                            <audio style="display:none;" src="./media/audios/error_audio.mp3"></audio>
                         </span>
                     </div>
 
@@ -91,7 +92,11 @@ if (isset($_GET['auth'])) {
     </div>
 
     <script>
-        setTimeout(myURL, 7000);
+        onload = (event) => {
+            setTimeout(myURL, 7000);
+            const audio = document.querySelector('audio');
+            audio.play();
+        };
         function myURL() {
             document.location.href = 'registra-presenca.php';
         }

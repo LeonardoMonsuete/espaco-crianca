@@ -52,6 +52,7 @@ Promise.all([
 ]).then(startVideo)
 
 var count = 0;
+var times = 0
 cam.addEventListener('play', async () => {
     var MediaStream;
     const canvas = faceapi.createCanvasFromMedia(cam)
@@ -64,7 +65,8 @@ cam.addEventListener('play', async () => {
     document.body.appendChild(canvas)
 
     var intervalId = setInterval(async () => {
-     
+        times++
+        console.log(times)
         const detections = await faceapi
             .detectAllFaces(
                 cam,
@@ -104,19 +106,27 @@ cam.addEventListener('play', async () => {
                 }
             }
         })
+        
+        if(times > 99){
+            clearInterval(intervalId); 
+        }
 
         if(count == 1){
             if(pessoa){
-                console.log('vai chamar')
                 window.location.href = './src/controllers/general/presenceController.php?pessoa=' + pessoa
             }
         }
+
+        var urlToRedirect = "registra-presenca.php";
+        if(window.confirm("Pessoa não foi reconhecida dentro do tempo estipulado, deseja tentar marcação pela matrícula ?")){
+            urlToRedirect = "/espaco-crianca/";
+        }
+        window.location.href = urlToRedirect
+
     }, 100)
 
 
 })
-
-
 
 
 function getPersonRegistrations(method, url) {
