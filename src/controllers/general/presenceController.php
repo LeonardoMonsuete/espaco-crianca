@@ -4,7 +4,7 @@ use Models\Person;
 use Models\Presence;
 
 require $_SERVER['DOCUMENT_ROOT'] . "/espaco-crianca/src/config/settings.config.php";
-$personRegistration = $_REQUEST['pessoa'];
+$personRegistration = isset($_POST['pessoa']) ? $_POST['pessoa'] : $_GET['pessoa'];
 $dsCategory = Person::getPersonByAttribute(null,"matricula",$personRegistration)['ds_categoria'] ?? ' pessoa';
 $response = ['status' => 0, 'msg' => 'Erro ao registrar presença para o ' . $dsCategory];
 
@@ -17,8 +17,8 @@ if(empty($person)){
 if($person['status'] == 0){
     $response['msg'] = ucfirst($dsCategory) . " reconhecida porém inativado no sistema";
 }
-
-$presenceObj = new Presence($person['id'], $person['nome']);
+$manual = isset($_POST['pessoa']) ? 1 : 0;
+$presenceObj = new Presence($person['id'], $person['nome'], $manual);
 
 if($presenceObj instanceof Presence){
     $response = $presenceObj->registerPresenceAuto();
@@ -27,7 +27,12 @@ if($presenceObj instanceof Presence){
 }
 
 $_SESSION['responsePersonPresence'] = $response;
-header('Location: ../../../presenca-resposta.php?auth='.base64_encode($response['status']));
+if($manual === 1){
+    $response['urlLocation'] = '/espaco-crianca/presenca-resposta.php?auth='.base64_encode($response['status']);
+    echo json_encode($response);
+} else {
+    header('Location: ../../../presenca-resposta.php?auth='.base64_encode($response['status']));
+}
 ?>
 
 

@@ -96,6 +96,24 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalChangeRecognizeMethod" tabindex="-1" aria-labelledby="modalChangeRecognizeMethodLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="modalChangeRecognizeMethodLabel">Tempo de reconhecimento excedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Pessoa não foi reconhecida dentro do tempo estipulado, deseja tentar marcação pela matrícula ?
+                </div>
+                <div class="modal-footer">
+                    <button onclick="window.location.href = 'registra-presenca-manual.php'" type="button" class="btn btn-primary" data-bs-dismiss="modal">Sim</button>
+                    <button onclick="window.location.href = 'registra-presenca.php'" type="button" class="btn btn-secondary">Não, tentar novamente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
     <!-- JS -->

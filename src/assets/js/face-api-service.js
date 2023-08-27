@@ -52,8 +52,13 @@ Promise.all([
 ]).then(startVideo)
 
 var count = 0;
-var times = 0
+var times = 0;
+let isToStop = false;
+
 cam.addEventListener('play', async () => {
+    $(".loading-spinner-div")[0].classList.add('fade-out');
+    $(".loading-spinner-div").hide("slow");
+    $("#loading-camera").hide();
     var MediaStream;
     const canvas = faceapi.createCanvasFromMedia(cam)
     const canvasSize = {
@@ -84,9 +89,7 @@ cam.addEventListener('play', async () => {
 
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
         faceapi.draw.drawDetections(canvas, resizedDetections)
-        $(".loading-spinner-div")[0].classList.add('fade-out');
-        $(".loading-spinner-div").hide("slow");
-        $("#loading-camera").hide();
+
         let pessoa;
         results.forEach((result, index) => {
             const box = resizedDetections[index].detection.box
@@ -106,27 +109,28 @@ cam.addEventListener('play', async () => {
                 }
             }
         })
-        
-        if(times > 99){
-            clearInterval(intervalId); 
-        }
 
         if(count == 1){
             if(pessoa){
                 window.location.href = './src/controllers/general/presenceController.php?pessoa=' + pessoa
             }
         }
-
-        var urlToRedirect = "registra-presenca.php";
-        if(window.confirm("Pessoa não foi reconhecida dentro do tempo estipulado, deseja tentar marcação pela matrícula ?")){
-            urlToRedirect = "/espaco-crianca/";
+        if(times > 5){
+            clearInterval(intervalId);
+            MediaStream = cam.srcObject.getTracks()[0];
+            MediaStream.stop()
+            isToStop = true;
+            await doit (isToStop);
         }
-        window.location.href = urlToRedirect
-
-    }, 100)
-
-
+        
+    }, 1000)
 })
+
+async function doit(isToStop){
+    if(isToStop){
+        $("#modalChangeRecognizeMethod").modal("show");
+    }
+}
 
 
 function getPersonRegistrations(method, url) {

@@ -14,11 +14,16 @@
             </div>
         </div> 
         <div class="nav-link-logo"> 
-            <a href="./src/controllers/admin/logoutAdminController.php" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span class="nav_name">Deslogar</span> </a>
+            <a onclick="makeLogout()" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span class="nav_name">Deslogar</span> </a>
         </div>
     </nav>
 </div>
 
 <script>   
+    function makeLogout()
+    {
+        logout();
+        window.location.href="./src/controllers/admin/logoutAdminController.php"
+    }
     document.getElementById('greetings-span').append(window.localStorage.getItem('userLoggedNome') + ' !')
 </script>

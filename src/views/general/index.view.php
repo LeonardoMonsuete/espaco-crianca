@@ -63,13 +63,23 @@ require $_SERVER['DOCUMENT_ROOT'] . "/espaco-crianca/src/config/settings.config.
 
         <div class="row d-flex justify-content-center">
             <!-- <div class="col"></div> -->
-            <div class="col-12 d-grid gap-2"> <button onclick="redirect('login.php')" class="btn btn-dark text-white btn-lg mb-2">Painel administrativo</button> </div>
+            <div class="col-12 d-grid gap-2"> <button onclick="redirectToLoginOrAdminIndex()" class="btn btn-dark text-white btn-lg mb-2">Painel administrativo</button> </div>
             <!-- <div class="col"></div> -->
         </div>
 
     </div>
 
-
+    <script>
+        function redirectToLoginOrAdminIndex()
+        {
+            if(window.localStorage.getItem('userLoggedId') > 0){
+                redirect('admin-index.php')
+                return true;
+            }
+            redirect('login.php')
+            return true;
+        }
+    </script>
 </body>
 
 </html>

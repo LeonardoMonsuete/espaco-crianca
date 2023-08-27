@@ -56,8 +56,13 @@ if (isset($_GET['startDate']) && isset($_GET['endDate']) && !isset($_GET['catego
     <!--Container Main start-->
     <div class="w-100 h-100 no-bg">
         <div class="container-fluid mt-3">
-            <div class="row col-md-12 pt-5 border-bottom">
-                <h3>Listagem de presenças</h3>
+            <div class="row col-md-12 pt-5 border-bottom mb-2">
+                <div class="col-md-8">
+                    <h3>Listagem de presenças</h3>
+                </div>
+                <div class="col-md-4 d-flex flex-row-reverse">
+                    <a onclick="window.location.href = 'registra-presenca-manual.php'" class="btn btn-info mt-1 mb-1 float-right" type="button">Inserir presença manual</a>
+                </div>
             </div>
 
             <div class="row col-md-12 mt-2">

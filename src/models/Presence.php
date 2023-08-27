@@ -21,13 +21,13 @@ class Presence
     private ?string $classValidation;
 
 
-    public function __construct($id_pessoa, $nome_pessoa)
+    public function __construct($id_pessoa, $nome_pessoa, $entrada_manual = 0)
     {
         $this->data = date('Y-m-d');
         $this->hora_entrada = date('H:i:s');
         $this->id_pessoa = $id_pessoa;
         $this->nome_pessoa = $nome_pessoa;
-        $this->entrada_manual = 0;
+        $this->entrada_manual = $entrada_manual;
 
         if (!$this->classValidation()) {
             throw new Exception($this->classValidation['errors']);
