@@ -8,6 +8,7 @@ require $_SERVER['DOCUMENT_ROOT'] . "/espaco-crianca/src/config/settings.config.
 $postData = $_POST;
 $postFiles = $_FILES;
 $response = validateIsSetPostData($postData,$postFiles);
+$response['urlLocation'] = 'pessoa.php';
 if($response['status'] == 1){
     switch ($postData['action']) {
         case 'changeStatus':

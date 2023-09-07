@@ -108,12 +108,13 @@ class Person
         try {
             $img_01_to_record = $this->matricula . "/img_01.jpg";
             $img_02_to_record = $this->matricula . "/img_02.jpg";
-            $sql = "INSERT INTO " . DB_NAME . ".pessoa (nome, matricula, 
+            $sql = "INSERT INTO " . DB_NAME . ".pessoa (nome, matricula, id_categoria,
             img_01, img_02, id_responsavel, status) 
-            VALUES (:nome,:matricula,:img_01,:img_02,:id_responsavel, :status)";
+            VALUES (:nome,:matricula, :id_categoria, :img_01,:img_02,:id_responsavel, :status)";
             $stmt = $connection->prepare($sql);
             $stmt->bindParam(':nome', $this->nome);
             $stmt->bindParam(':matricula', $this->matricula);
+            $stmt->bindParam(':id_categoria', $this->id_categoria);
             $stmt->bindParam(':status', $this->status);
             $stmt->bindParam(':img_01', $img_01_to_record);
             $stmt->bindParam(':img_02', $img_02_to_record);
