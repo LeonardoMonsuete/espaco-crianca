@@ -7,4 +7,5 @@ Desenvolvido em PHP 7.4 puro (sem framework) usando JavaScript como tecnologia b
 
 # Installation
 Instalar xampp >= v3 (PHP 7.4+ e MySqlServer com PhpMyAdmin)
-Rodar o script setupDatabase.bat
+Criar base espaco-crianca no PhpMyAdmin
+e Importar o setup/espaco_crianca_setup.sql
