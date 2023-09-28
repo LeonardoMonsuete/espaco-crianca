@@ -10,6 +10,10 @@ class PersonCategory
     public int $id;
     public ?string $ds_categoria;
     private ?string $classValidation;
+    public const _DS_CAT_VISITANTE = 'Visitante';
+    public const _DS_CAT_ASSISTIDO = 'Assistido';
+    public const _DS_CAT_COLABORADOR = 'Colaborador';
+    public const _DS_CAT_VOLUNTARIO = 'Voluntário';
 
     public function __construct($ds_categoria, $fromRegister = false)
     {

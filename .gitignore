@@ -1,2 +1,5 @@
 .vscode
 /media/pictures/*
+/src/config/gmail.config.php
+/src/config/database.config.php
+/src/controllers/admin/tmp/*

@@ -1,76 +1,177 @@
-<?php 
-
-header('Content-Type: text/html; charset=UTF-8');
-require $_SERVER['DOCUMENT_ROOT'] . "/espaco-crianca/src/config/settings.config.php";
-require_once($_SERVER['DOCUMENT_ROOT'].'/espaco-crianca/src/libs/mail/src/PHPMailer.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/espaco-crianca/src/libs/mail/src/SMTP.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/espaco-crianca/src/libs/mail/src/Exception.php');
+<?php
+include_once "../../config/settings.config.php";
+include_once "../../config/database.config.php";
+include_once "../../config/gmail.config.php";
+include('../../../../espaco-crianca/src/libs/mail/src/PHPMailer.php');
+include('../../../../espaco-crianca/src/libs/mail/src/SMTP.php');
+include('../../../../espaco-crianca/src/libs/mail/src/Exception.php');
+include('../../../../espaco-crianca/src/models/Config.php');
+include('../../../../espaco-crianca/src/models/Presence.php');
+include('../../../../espaco-crianca/src/models/PersonCategory.php');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use Models\Config;
+use Models\PersonCategory;
+use Models\Presence;
 
-$mail = new PHPMailer(true);
+$messageReturnConsole = "Relatorio de presencas enviado com sucesso !";
+try {
+    $connection = getConnection();
+    $destinataryDailyReport = Config::getConfigByAttribute($connection,'ds_configuracao', Config::_CONFIG_MAIL_REPOSITORY_)['valor_configuracao'];
+    $hourToSendDailyReport = Config::getConfigByAttribute($connection,'ds_configuracao', Config::_CONFIG_TIME_TRIGGER_TO_SEND_PRESENCES_REPORT_)['valor_configuracao'];
 
-try{
-    $mail->CharSet = 'UTF-8';
-    $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->SMTPSecure = "ssl";
-    $mail->Username = 'info.brjsp@gmail.com';
-    $mail->Password = 'jsp152436';
-    $mail->Port = 465;
-    $mail->setFrom('info.brjsp@gmail.com', 'JSPSystem - Baixa de ativo (Patrimônio)');
+    if($hourToSendDailyReport !== date('H:m')){
+        echo "Hora atual não é a hora configurada no sistema para envio do relatório";
+        return true;
+    }
 
-    $mail->AddEmbeddedImage($_SERVER['DOCUMENT_ROOT'].'/src/assets/images/jsp_logo.jpg', 'jsplogo');
-    $mail->AddEmbeddedImage($_SERVER['DOCUMENT_ROOT'].'/src/assets/images/JSPsystem_email.png', 'jspsystemlogo');
-    //$mail->addAddress($email_destino);//email do Solicitante
-    $mail->addAddress('leonardo.oliveira@jsp.com');//email do Solicitante
-    $mail->Subject = "Solicitação de baixa de ativo Nº $id_baixa";
-    $mail->isHTML(true);
-    $mail->Body = "<div style='width:100%; height:400px; border-style: solid; border-width: 1px; border-color: gray;'>
-    <div style='height: 100px; background-color:#343a40; margin-right: -4px;'>
-        <table style='background-color:#343a40; width:100%;'>
-                <thead>
-                    <tr>
-                        <th style='text-align:left;' colspan='4'><img style='width='150 float:left; display: inline-block;' height='70' src='cid:jsplogo' /></th>
-                        <th colspan='4'><h2 style='color:orange; display: inline-block;'>Olá $nome_solicitante</h2></th>
-                        <th style='text-align:right;' colspan='4'><img style='float:right;  display: inline-block;' width='180' height='70' src='cid:jspsystemlogo' /></th>
-                    </tr>
-                <thead>
-                <tbody>
-                </tbody> 
-        </table>            
-    </div>    
-    <div style='height: 140px;'>
-    <p style='color:black; margin-left:10px; font-size:20px; margin-top:10px; margin-bottom:10px;'>Sua solicitação de recurso de TI número $aprovar_solic_id referente ao: $acesso_solicitado, foi efetivada pelo departamento de TI ! Clique <a href='http://10.80.10.142/' style='color:black;'>aqui</a> para acessar JSPSystem e validar.
-    </div>  
-    <div style='height: 100px; width:100%; background-color:#343a40;border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 8px;'>
-        <p style='color: orange;font-size: 20px; margin-top:20px; margin-bottom:20px;'>Por favor <strong>não</strong> respoda este e-mail! Este é um e-mail gerado automaticamente pelo sistema JSPSYSTEM.
-        <br>
-        <p style='color: orange; text-align:center;'>© Todos os direitos reservados
-    </div>
-</div> ";
+    if(!$destinataryDailyReport){
+        echo "Nao ha e-mail(s) configurado(s) para receber o relatorio";
+        return true;
+    }
 
-    if($mail->send()){
-        $_SESSION['msgsent'] = "<div class='alert alert-info' role='alert'>Email de confirmação/notificação enviado com sucesso!<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
-        <span aria-hidden='true'>&times;</span>
-        </button>
-        </div>";
+    $destinatariesArr = explode(";", $destinataryDailyReport);
+    $dataToCsv = getDataToReport($connection);
 
-    }else{
-        $_SESSION['msgcad'] = "<div class='alert alert-danger' role='alert'>Erro ao enviar e-mail de notificação !<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
-        <span aria-hidden='true'>&times;</span>
-        </button>
-        </div>";
-    }   
+    if(!is_array($dataToCsv) && !$dataToCsv){
+        echo "Nao ha presenças de hoje ate o momento para geracao do relatorio";
+        return true;
+    }
 
-}catch(Exception $e){
-    $_SESSION['msgcad'] = "<div class='alert alert-danger' role='alert'>Erro ao enviar e-mail de notificação ! {$mail->ErroInfo}<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
-    <span aria-hidden='true'>&times;</span>
-    </button>
-    </div>";
-    echo $e->getMessage();
+    $csv = createCsv($dataToCsv);
+
+    foreach ($destinatariesArr as $destinatary) {
+        if (!sendDailyMail($destinatary, $csv)) {
+            $messageReturnConsole = "Erro ao enviar e-mail de notificacao";
+        }
+    }
+
+    unlink($csv);
+
+    echo $messageReturnConsole;
+} catch (\Throwable $th) {
+    echo $th->getMessage();
 }
 
-?>
+return true;
+
+function sendDailyMail(string $destinatary, string $csv): bool
+{
+    $mail = new PHPMailer(true);
+    $return = true;
+    try {
+        $mail->CharSet = 'UTF-8';
+        $mail->isSMTP();
+        $mail->Host = SENDER_MAIL_HOST;
+        $mail->SMTPAuth = true;
+        $mail->SMTPSecure = SENDER_MAIL_SECURE_PROTCOL;
+        $mail->Username = SENDER_MAIL_ADDRESS;
+        $mail->Password = SENDER_MAIL_PASS;
+        $mail->Port = SENDER_MAIL_PORT;
+        $mail->setFrom(SENDER_MAIL_ADDRESS, 'Espaço da Criança - Relatório diário de presenças');
+        $mail->AddEmbeddedImage('../../../../espaco-crianca/src/assets/images/logo-s-bg.png', 'project-banner');
+        $mail->addAddress($destinatary); //email do Solicitante
+        $mail->Subject = "Relatório diário de presença de assistidos " . date('d/m/Y');
+        $mail->isHTML(true);
+        $mail->Body = getBody();
+
+        $mail->AddAttachment($csv , "relatorio_" . date('d/m/Y').".csv" );
+
+        if (!$mail->send()) {
+            $return = false;
+        }
+
+    } catch (Exception $e) {
+        $_SESSION['msgcad'] = "<div class='alert alert-danger' role='alert'>Erro ao enviar e-mail de notificação ! {$e->getMessage()}<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+        <span aria-hidden='true'>&times;</span>
+        </button>
+        </div>";
+        echo $e->getMessage();
+        $return = false;
+    }
+
+    return $return;
+}
+
+
+function getBody(): string
+{
+    return "<div style='width:100%; height:400px; border-style: solid; border-width: 1px; border-color: gray;'>
+    <div style='height: 100px; background-color:#97A5E2; margin-right: -4px;'>
+        <table style='background-color:#97A5E2; width:100%;'>
+            <thead>
+                <tr>
+                    <th style='text-align:left;' colspan='4'><img style='float:left; display:
+                            inline-block;' width='80' height='80' src='cid:project-banner' /></th>
+                    <th colspan='4'>
+                        <h2 style='color:white; display: inline-block;  '>Olá !</h2>
+                    </th>
+                    <th style='text-align:left;' colspan='4'><img style='float:right; display:
+                            inline-block;' width='80' height='80' src='cid:project-banner' /></th>
+                </tr>
+                <thead>
+                <tbody>
+                </tbody>
+        </table>
+    </div>
+    <div style='height: 140px;'>
+        <p style='color:black; margin-left:10px; font-size:20px; margin-top:10px; margin-bottom:10px;'>Relatório diário de presenças de 
+            assistidos gerado com sucesso em anexo !
+            Clique <a target='_blank' href='https://localhost/espaco-crianca/login.php' style='color:black;'>aqui</a> para
+            acessar o sistema caso queira analisar utilizando os filtros de relatório.
+    </div>
+    <div
+        style='height: 100px; width:100%; background-color:#97A5E2;border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; margin-top: 8px;'>
+        <p style='color: white;font-size: 20px; margin-top:20px; margin-bottom:20px;'>Por favor <strong>não</strong>
+            respoda este e-mail! Este é um e-mail gerado automaticamente pelo sistema.
+            <br>
+        <p style='color: white; text-align:center;'>© Todos os direitos reservados
+    </div>
+</div> ";
+}
+
+function getConnection(): mixed
+{
+    $pdoConfig  = "mysql:". "Server=" . DB_SERVER . ";";
+    $pdoConfig .= "Database=espaco_crianca;".DB_NAME.";";
+
+    try {
+        if(!isset($connection)){
+            $connection =  new PDO($pdoConfig, DB_USER, DB_PASS);
+            $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        }
+        return $connection;
+     } catch (Exception $e) {
+        $mensagem = "Drivers disponiveis: " . implode(",", PDO::getAvailableDrivers());
+        $mensagem = "\nErro: " . $e->getMessage();
+        throw new Exception($mensagem);
+     }
+}
+
+function getDataToReport(mixed $connection): Array
+{
+    $dailyPresences = Presence::getPresencesByDateAndCategoryOrAll($connection, date('Y-m-d 00:00:00.000'), date('Y-m-d 23:59:59.000'), PersonCategory::getCategoryByAttribute($connection,'ds_categoria', PersonCategory::_DS_CAT_ASSISTIDO)['id']);
+    $dataArrayResponse = [];
+    foreach ($dailyPresences as $key => $value) {
+        $dataArrayResponse[$key]['aluno'] = $value['nome'];
+        $dataArrayResponse[$key]['matricula'] = $value['matricula'];
+        $dataArrayResponse[$key]['data'] = date('d/m/Y', strtotime($value['data']));
+        $dataArrayResponse[$key]['entrada'] = date('H:m:i', strtotime($value['hora_entrada']));
+        $dataArrayResponse[$key]['saida'] = ($value['hora_saida']) ? date('H:m:i', strtotime($value['hora_saida'])) : "N/A";
+    }
+    return $dataArrayResponse;
+}
+
+function createCsv(Array $dataArr): string
+{
+    $fileName = "tmp/relatorio_".date('d-m-Y').".csv";
+    $arquivo = fopen($fileName, 'w');
+    fputcsv($arquivo, ['Nome', 'Matrícula', 'Data', 'Hora entrada' ,'Hora de saída']);
+    foreach ($dataArr as $linha) {
+        fputcsv($arquivo, $linha);
+    }
+
+    fclose($arquivo);
+    return $fileName;
+}

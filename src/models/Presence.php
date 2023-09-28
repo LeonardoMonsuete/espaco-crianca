@@ -76,10 +76,10 @@ class Presence
         $categoryFilter = "";
 
         if(!empty($category)){
-            $categoryFilter = " AND a.id_categoria in (select id from " . DB_NAME . ".categoria_pessoa where id = $category ) ";
+            $categoryFilter = " AND a.id_categoria in (select id from " . DB_NAME . ".categoria_pessoa where id = '$category' ) ";
         }
 
-        $sql = "SELECT * FROM " . DB_NAME . ".presenca as p inner join " . DB_NAME . ".pessoa as a on p.id_pessoa = a.id WHERE DATE(data) = CURDATE() $category";
+        $sql = "SELECT * FROM " . DB_NAME . ".presenca as p inner join " . DB_NAME . ".pessoa as a on p.id_pessoa = a.id WHERE DATE(data) = CURDATE() $categoryFilter";
 
         if(!empty($startDate) && !empty($endDate)){
             $sql = "SELECT * FROM " . DB_NAME . ".presenca as p inner join " . DB_NAME . ".pessoa as a on p.id_pessoa = a.id WHERE DATE(data) >= '$startDate' AND DATE(data) <= '$endDate' $categoryFilter";
