@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 28-Set-2023 às 02:55
+-- Tempo de geração: 29-Set-2023 às 02:49
 -- Versão do servidor: 10.4.27-MariaDB
 -- versão do PHP: 8.0.25
 
@@ -46,6 +46,16 @@ CREATE TABLE `configuracao` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `configuracao`
+--
+
+INSERT INTO `configuracao` (`id`, `ds_configuracao`, `valor_configuracao`, `tipo`, `created_at`, `updated_at`) VALUES
+(1, 'Registra saida da pessoa', '0', 'booleano', '2023-02-06 16:34:12', null),
+(2, 'Imagem de plano de fundo padrão', 'background.jpeg', 'arquivo', '2023-02-07 14:46:58', null),
+(3, 'Destinatários disparo de e-mails (caso queira mais de um endereço separa-los com ; ).', 'youmail@mail.com', 'texto', '2023-03-07 13:08:55', null),
+(4, 'Horário de disparo de relatório diário de presença', '14:00', 'hora', '2023-03-07 13:10:09', null);
 
 -- --------------------------------------------------------
 
@@ -196,7 +206,7 @@ ALTER TABLE `categoria_pessoa`
 -- AUTO_INCREMENT de tabela `configuracao`
 --
 ALTER TABLE `configuracao`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `pessoa`

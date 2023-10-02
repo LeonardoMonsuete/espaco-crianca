@@ -21,10 +21,10 @@ try {
     $destinataryDailyReport = Config::getConfigByAttribute($connection,'ds_configuracao', Config::_CONFIG_MAIL_REPOSITORY_)['valor_configuracao'];
     $hourToSendDailyReport = Config::getConfigByAttribute($connection,'ds_configuracao', Config::_CONFIG_TIME_TRIGGER_TO_SEND_PRESENCES_REPORT_)['valor_configuracao'];
 
-    if($hourToSendDailyReport !== date('H:m')){
-        echo "Hora atual não é a hora configurada no sistema para envio do relatório";
-        return true;
-    }
+    // if($hourToSendDailyReport !== date('H:i')){
+    //     echo "Hora atual não é a hora configurada no sistema para envio do relatório";
+    //     return true;
+    // }
 
     if(!$destinataryDailyReport){
         echo "Nao ha e-mail(s) configurado(s) para receber o relatorio";
@@ -39,15 +39,29 @@ try {
         return true;
     }
 
+    if($fileSent = fopen("tmp/relatorio_".date('d-m-Y').".csv", 'r')){
+        echo "Ja foi enviado relatorio diario hoje";
+        fclose($fileSent);
+        return false;
+    }
+
+    if(!resetTmpFolder()){
+        echo "Houve um erro ao limpar a pasta tmp de relatorios antigos ja enviados por e-mail";
+        return false;
+    }
+
     $csv = createCsv($dataToCsv);
+
 
     foreach ($destinatariesArr as $destinatary) {
         if (!sendDailyMail($destinatary, $csv)) {
-            $messageReturnConsole = "Erro ao enviar e-mail de notificacao";
+            $messageReturnConsole = "Erro ao enviar e-mail de notificacao para " .$destinatary;
+            if(!resetTmpFolder()){
+                echo "Houve um erro ao limpar a pasta tmp de relatorios antigos ja enviados por e-mail";
+                return false;
+            }
         }
     }
-
-    unlink($csv);
 
     echo $messageReturnConsole;
 } catch (\Throwable $th) {
@@ -55,6 +69,22 @@ try {
 }
 
 return true;
+
+
+function resetTmpFolder()
+{
+    try {
+        $files = glob('tmp' . '/*');
+        foreach ($files as $file) {
+            if (is_file($file))
+                unlink($file);
+        }
+    } catch (\Throwable $th) {
+        echo $th->getMessage();
+        return false;
+    }
+    return true;
+}
 
 function sendDailyMail(string $destinatary, string $csv): bool
 {
@@ -131,7 +161,7 @@ function getBody(): string
 </div> ";
 }
 
-function getConnection(): mixed
+function getConnection()
 {
     $pdoConfig  = "mysql:". "Server=" . DB_SERVER . ";";
     $pdoConfig .= "Database=espaco_crianca;".DB_NAME.";";
@@ -149,7 +179,7 @@ function getConnection(): mixed
      }
 }
 
-function getDataToReport(mixed $connection): Array
+function getDataToReport($connection): Array
 {
     $dailyPresences = Presence::getPresencesByDateAndCategoryOrAll($connection, date('Y-m-d 00:00:00.000'), date('Y-m-d 23:59:59.000'), PersonCategory::getCategoryByAttribute($connection,'ds_categoria', PersonCategory::_DS_CAT_ASSISTIDO)['id']);
     $dataArrayResponse = [];

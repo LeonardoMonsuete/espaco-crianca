@@ -72,7 +72,7 @@ if (isset($_GET['update']) && isset($_GET['id'])) {
                                         <option value="<?= $category['id'] ?>"><?= $category['ds_categoria'] ?> </option>
                                     <?php } ?>
                                 <?php else : ?>
-                                    <option selected value="<?= $personUpdating['id'] ?>"><?= PersonCategory::getCategoryByAttribute(null, 'id', $personUpdating['id_categoria'])['ds_categoria'] ?> </option>
+                                    <option selected value="<?= $personUpdating['id_categoria'] ?>"><?= PersonCategory::getCategoryByAttribute(null, 'id', $personUpdating['id_categoria'])['ds_categoria'] ?> </option>
                                     <?php foreach (PersonCategory::getCategories() as $category) {
                                         if ($category['id'] !== $personUpdating['id_categoria']) {
                                     ?>
