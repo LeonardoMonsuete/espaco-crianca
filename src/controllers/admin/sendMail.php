@@ -20,11 +20,17 @@ try {
     $connection = getConnection();
     $destinataryDailyReport = Config::getConfigByAttribute($connection,'ds_configuracao', Config::_CONFIG_MAIL_REPOSITORY_)['valor_configuracao'];
     $hourToSendDailyReport = Config::getConfigByAttribute($connection,'ds_configuracao', Config::_CONFIG_TIME_TRIGGER_TO_SEND_PRESENCES_REPORT_)['valor_configuracao'];
+    $skipTimeVerify = false;
+    
+    $fileSent = fopen("tmp/relatorio_".date('d-m-Y').".csv", 'r');
+    if($hourToSendDailyReport < date('H:i') && !$fileSent){
+        $skipTimeVerify = true;
+    }
 
-    // if($hourToSendDailyReport !== date('H:i')){
-    //     echo "Hora atual não é a hora configurada no sistema para envio do relatório";
-    //     return true;
-    // }
+    if($hourToSendDailyReport !== date('H:i') && !$skipTimeVerify){
+        echo "Hora atual não é a hora configurada no sistema para envio do relatório";
+        return true;
+    }
 
     if(!$destinataryDailyReport){
         echo "Nao ha e-mail(s) configurado(s) para receber o relatorio";
@@ -39,7 +45,7 @@ try {
         return true;
     }
 
-    if($fileSent = fopen("tmp/relatorio_".date('d-m-Y').".csv", 'r')){
+    if($fileSent){
         echo "Ja foi enviado relatorio diario hoje";
         fclose($fileSent);
         return false;
@@ -51,7 +57,6 @@ try {
     }
 
     $csv = createCsv($dataToCsv);
-
 
     foreach ($destinatariesArr as $destinatary) {
         if (!sendDailyMail($destinatary, $csv)) {
@@ -69,7 +74,6 @@ try {
 }
 
 return true;
-
 
 function resetTmpFolder()
 {
